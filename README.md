@@ -1,5 +1,5 @@
 # Modulo para OpenMage - IOPAY
-
+![IoPay](https://static.iopay.dev/assets/img/capa_git.jpg)
 ## Documentação
 
 Esse módulo para OpenMage permite integrar sua loja com a IOPAY API.
