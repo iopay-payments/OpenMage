@@ -1,4 +1,4 @@
-# Modulo para OpenMage - IOPAY
+# Módulo para OpenMage - IOPAY
 ![IoPay](https://static.iopay.dev/assets/img/capa_git.jpg)
 ## Documentação
 
