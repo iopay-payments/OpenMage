@@ -271,4 +271,69 @@ class IOPay_Gateway_Helper_Data extends IOPay_Gateway_Helper_Abstract
         }
         return $brandImg;
     }
+
+    /**
+     * Return installments options to populate dropdown in checkout field
+     * @return array|mixed|null
+     */
+    public function getCcInstallments() {
+        $grandTotal         = Mage::getSingleton('checkout/type_onepage')->getQuote()->getGrandTotal();
+        $installOpt         = Mage::helper('iopay_gateway')->getInstallments();
+        $installWithFee     = Mage::helper('iopay_gateway')->getInstallmentsWithFee();
+        $installFee         = Mage::helper('iopay_gateway')->getInstallmentsFee();
+        $installments       = null;
+
+        for ($i=1; $i <= $installOpt; $i++) {
+
+            $installmentAmount  = $grandTotal/$i; //valor da parcela
+            $labelFee           = "sem juros";
+            $orderTotal         = $grandTotal;
+
+            if ($installWithFee) {
+                if ($i >= $installWithFee) { //juros nas parcelas acima de
+                    $fee                = ($grandTotal / 100) * $installFee;
+                    $installmentAmount  = $installmentAmount + $fee; //parcela + juro
+                    $orderTotal         = $i * $installmentAmount;
+                    $labelFee           = "com juros de {$installFee}%";
+                }
+            }
+
+            $orderTotal         = Mage::getModel('directory/currency')->format($orderTotal, array('display'=>Zend_Currency::USE_SYMBOL));
+            $installmentAmount  = Mage::getModel('directory/currency')->format($installmentAmount, array('display'=>Zend_Currency::USE_SYMBOL));
+            $label              = "{$i}x de {$installmentAmount} {$labelFee} (Total {$orderTotal})";
+            $installments[$i]   = $label;
+        }
+
+        return $installments;
+    }
+
+    /**
+     * Return installments options to populate dropdown in checkout field
+     * @return array|mixed|null
+     */
+    public function getOrderTotalWithInstallments($installment) {
+        $grandTotal         = Mage::getSingleton('checkout/type_onepage')->getQuote()->getGrandTotal();
+        $installOpt         = Mage::helper('iopay_gateway')->getInstallments();
+        $installWithFee     = Mage::helper('iopay_gateway')->getInstallmentsWithFee();
+        $installFee         = Mage::helper('iopay_gateway')->getInstallmentsFee();
+        $installments       = null;
+
+        for ($i=1; $i <= $installOpt; $i++) {
+
+            $installmentAmount  = $grandTotal/$i; //valor da parcela
+            $orderTotal         = $grandTotal;
+
+            if ($installWithFee) {
+                if ($i >= $installWithFee) { //juros nas parcelas acima de
+                    $fee                = ($grandTotal / 100) * $installFee;
+                    $installmentAmount  = $installmentAmount + $fee; //parcela + juro
+                    $orderTotal         = $i * $installmentAmount;
+                }
+            }
+
+            if ($i == $installment) {
+                return $orderTotal;
+            }
+        }
+    }
 }
